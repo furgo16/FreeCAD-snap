@@ -16,6 +16,11 @@ jobs:
       run: |
         sudo snapcraft -v --destructive-mode
         sudo rm -rf $HOME/.config/snapcraft
+    - name: publish snap
+      if: github.repository_owner == 'FreeCAD' # Do not run on forks
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+      run: snapcraft upload --release=edge freecad*.snap
     - name: upload snap package
       uses: actions/upload-artifact@v4
       with:
