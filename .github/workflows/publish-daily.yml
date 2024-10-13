@@ -16,10 +16,14 @@ jobs:
       run: |
         sudo snapcraft -v --destructive-mode
         sudo rm -rf $HOME/.config/snapcraft
-    - name: upload snap artifacts
+    - name: upload snap package
       uses: actions/upload-artifact@v4
       with:
-        name: build-artifacts
-        path: |
-          freecad*.snap
-          /root/.local/state/snapcraft/log/snapcraft-*.log
+        name: snap-package
+        path: freecad*.snap
+    - run: sudo cp /root/.local/state/snapcraft/log/snapcraft-*.log ./
+    - name: upload snapcraft log
+      uses: actions/upload-artifact@v4
+      with:
+        name: snapcraft-log
+        path: snapcraft-*.log
