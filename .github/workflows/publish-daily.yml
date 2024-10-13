@@ -23,5 +23,7 @@ jobs:
     - name: upload snap artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: freecad.snap
-        path: freecad*.snap
+        name: build-artifacts
+        path: |
+          freecad*.snap
+          /root/.local/state/snapcraft/log/snapcraft-*.log
