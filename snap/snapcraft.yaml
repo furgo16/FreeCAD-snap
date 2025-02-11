@@ -225,7 +225,6 @@ parts:
       - python3-yaml # FEM
       - python3-numba # FEM (fcFEM)
       - python3-scipy # FEM
-      - python3-numpy
       - python3-matplotlib
       - python3-six
       - python3-packaging # Path
