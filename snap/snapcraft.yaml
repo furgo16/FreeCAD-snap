@@ -292,7 +292,6 @@ parts:
     stage:
       - -pyvenv.cfg
       - -lib/python3.10/site-packages/scipy*
-      - -lib/python3.10/site-packages/numpy*
 
   graphviz:
     plugin: nil
