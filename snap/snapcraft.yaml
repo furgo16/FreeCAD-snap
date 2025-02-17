@@ -157,7 +157,6 @@ parts:
       - -DCMAKE_FIND_ROOT_PATH=$CRAFT_STAGE\;/snap/kde-qt5-core24-sdk/current\;/snap/kf5-core24-sdk/current/usr
     build-snaps:
       - furgo-freecad-deps-core24/candidate
-      - kde-qt5-core24-sdk
     stage-snaps:
       - furgo-freecad-deps-core24/candidate
     build-packages:
