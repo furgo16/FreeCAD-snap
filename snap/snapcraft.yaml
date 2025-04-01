@@ -84,7 +84,7 @@ environment:
 apps:
   freecad:
     command: usr/bin/FreeCAD
-    extensions: [kde-neon-6]
+    extensions: [kde-neon-qt6]
     common-id: org.freecad.FreeCAD.desktop
     desktop: usr/share/applications/org.freecad.FreeCAD.desktop
     plugs: &plugs
@@ -101,7 +101,7 @@ apps:
       - snap/command-chain/desktop-launch
   cmd:
     command: usr/bin/FreeCADCmd
-    extensions: [kde-neon-6]
+    extensions: [kde-neon-qt6]
     plugs: *plugs
   pip:
     command: bin/pip
