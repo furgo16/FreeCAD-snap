@@ -9,9 +9,17 @@ jobs:
   publish_amd64:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.31.6'
+
     - name: install snapcraft
       run: sudo snap install snapcraft --classic
+
     - name: build snap
       continue-on-error: true
       run: |
