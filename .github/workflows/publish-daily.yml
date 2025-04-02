@@ -12,19 +12,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v2
+    - name: Install Snapcraft and build snap
+      uses: snapcore/action-build@v1
       with:
-        cmake-version: '3.31.6'
-
-    - name: install snapcraft
-      run: sudo snap install snapcraft --classic
-
-    - name: build snap
+        snapcraft-channel: latest/stable
+        snapcraft-args: --verbose
+      id: snapcraft
       continue-on-error: true
-      run: |
-        sudo snapcraft --destructive-mode --verbose
-        sudo rm -rf $HOME/.config/snapcraft
 
     - name: Copy snapcraft logs
       continue-on-error: true
@@ -38,20 +32,14 @@ jobs:
         name: snapcraft-log
         path: log/*
 
-    - name: publish snap
+    - name: Publish snap
       if: github.repository_owner == 'FreeCAD' # Do not run on forks
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
       run: snapcraft upload --release=edge freecad*.snap
 
-    - name: Gather snap package name
-      run: |
-        snapArtifactPath=$(find . -type f -name *.snap)
-        echo "Snap package name is: '$snapArtifactPath'"
-        echo "snapArtifactPath=$snapArtifactPath" >> $GITHUB_ENV
-
     - name: Upload snap package artifact
       uses: actions/upload-artifact@v4
       with:
         name: snap-package
-        path: ${{ env.snapArtifactPath }}
+        path: ${{ steps.snapcraft.outputs.snap }}
