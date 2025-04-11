@@ -137,7 +137,8 @@ parts:
 
   freecad:
     plugin: cmake
-    source: https://github.com/FreeCAD/FreeCAD.git
+    source: https://github.com/tetektoza/FreeCAD.git
+    source-branch: fix/change_continue_mode_behavior_in_draft
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
       - -DCMAKE_INSTALL_LIBDIR=lib
