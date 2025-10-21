@@ -18,7 +18,7 @@ jobs:
     - name: Install Snapcraft and build snap
       uses: snapcore/action-build@v1
       with:
-        snapcraft-channel: latest/stable
+        snapcraft-channel: 7.x/stable
         snapcraft-args: --verbose
       id: snapcraft
       continue-on-error: true
