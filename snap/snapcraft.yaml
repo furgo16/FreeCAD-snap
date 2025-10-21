@@ -182,6 +182,7 @@ parts:
       - openscad
       - python3-pivy
       - python3-matplotlib
+      - python3-lark
     stage-packages:
       - libaec0
       - libboost-filesystem1.74.0
