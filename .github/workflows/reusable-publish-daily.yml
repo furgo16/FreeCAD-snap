@@ -7,7 +7,6 @@ on:
       os:
         type: string
         required: true
-      # The specific git ref (branch or tag) to check out. Uses the default if not provided.
       checkout_ref:
         type: string
         required: false
@@ -38,8 +37,24 @@ jobs:
         with:
           snapcraft-channel: latest/stable
           snapcraft-args: --verbosity=trace
+          # --- START: Diagnostic Commands ---
+          pre-run: |
+            echo "--- Disk space before build ---"
+            df -h
+            echo "--- Cleaning apt cache ---"
+            sudo apt-get clean
+            echo "--- Disk space after cleaning cache ---"
+            df -h
+          post-run: |
+            echo "--- Post-build, pre-packing diagnostics ---"
+            echo "--- Disk space usage ---"
+            df -h
+            echo "--- Size of the prime directory ---"
+            du -sh /root/prime
+            echo "--- Generating list of all files in prime directory ---"
+            ls -lR /root/prime > /home/runner/prime-contents.txt
+          # --- END: Diagnostic Commands ---
 
-      # Upload logs regardless of build success or failure.
       - name: Upload log artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -47,8 +62,14 @@ jobs:
           name: snapcraft-log-${{ inputs.release_channel }}
           path: ${{ env.LOG_PATH }}/*
 
-      # Run only on the main FreeCAD repository (not forks) and only if the build was successful.
-      - name: Publish snap to Snap Store
+      - name: Upload prime contents artifact for debugging
+        if: failure() # Only run if the build fails
+        uses: actions/upload-artifact@v4
+        with:
+          name: prime-contents-log-${{ inputs.release_channel }}
+          path: /home/runner/prime-contents.txt
+
+      - name: Publish snap
         if: ${{ (github.repository_owner == 'FreeCAD') && (steps.snapcraft-pack.outcome == 'success') }}
         uses: canonical/action-publish@v1
         env:
