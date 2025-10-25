@@ -1,0 +1,75 @@
+name: Reusable Daily Snap Publisher (No LXC)
+
+on:
+  workflow_call:
+    inputs:
+      # The Ubuntu version for the runner (e.g., "ubuntu-22.04", "ubuntu-24.04").
+      os:
+        type: string
+        required: true
+      checkout_ref:
+        type: string
+        required: false
+      # The FreeCAD channel in the Snap Store to release the package to (e.g., "edge", "edge/qt6").
+      release_channel:
+        type: string
+        required: true
+    secrets:
+      # The Snapcraft store login credentials, passed from the caller workflow.
+      store_login:
+        required: true
+env:
+  LOG_PATH: /home/runner/.local/state/snapcraft/log/
+
+jobs:
+  publish:
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Checkout packaging repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref }}
+
+      - name: Install Snapcraft
+        run: sudo snap install snapcraft --classic --channel=latest/stable
+
+      - name: Check available disk space
+        run: df -h
+
+      - name: Build Snap in destructive mode
+        run: sudo snapcraft --destructive-mode --verbose
+
+      - name: Find Snap Package Name
+        id: find-snap
+        run: |
+          # Find the first .snap file in the current directory and set it as an output
+          snap_file=$(find . -maxdepth 1 -name "*.snap" -print -quit)
+          echo "snap_file=$snap_file" >> $GITHUB_OUTPUT
+
+      - name: Cleanup Snapcraft config
+        if: always()
+        run: sudo rm -rf $HOME/.config/snapcraft
+
+      - name: Upload log artifact
+        if: always() # Upload logs regardless of build success
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapcraft-log-${{ inputs.release_channel }}
+          path: ${{ env.LOG_PATH }}/*
+
+      - name: Publish snap
+        if: ${{ (github.repository_owner == 'FreeCAD') && (steps.find-snap.outputs.snap_file != '') }}
+        uses: canonical/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.store_login }}
+        with:
+          snap: ${{ steps.find-snap.outputs.snap_file }}
+          release: ${{ inputs.release_channel }}
+        continue-on-error: true
+
+      - name: Upload snap package artifact
+        if: ${{ steps.find-snap.outputs.snap_file != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap-package-${{ inputs.release_channel }}
+          path: ${{ steps.find-snap.outputs.snap_file }}
