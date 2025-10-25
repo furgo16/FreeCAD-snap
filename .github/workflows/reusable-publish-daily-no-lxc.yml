@@ -19,7 +19,7 @@ on:
       store_login:
         required: true
 env:
-  LOG_PATH: /home/runner/.local/state/snapcraft/log/
+  LOG_PATH: /root/.local/state/snapcraft/log/
 
 jobs:
   publish:
