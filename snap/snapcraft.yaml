@@ -140,7 +140,23 @@ parts:
     organize:
       "*": usr/Mod/SnapSetup/
 
+  setup-apt-pinning:
+    plugin: nil
+    override-pull: |
+      craftctl default
+
+      # Write the preferences file to /etc/apt/preferences.d/
+      # Use Priority 1001 to force this version even if a newer one exists
+      cat <<EOF > /etc/apt/preferences.d/snapcraft-pyside-pin
+
+      Package: libpyside6-dev libshiboken6-dev python3-pyside6* python3-shiboken6
+      Pin: version 6.9.*
+      Pin-Priority: 1001
+
+      EOF
+
   freecad:
+    after: [setup-apt-pinning]
     plugin: cmake
     source: https://github.com/FreeCAD/FreeCAD.git
     cmake-parameters:
